@@ -1,8 +1,8 @@
 __all__ = (
     "Base",
-    "Roll"
+    "RollBase"
 )
 
 from .base import Base
-from .roll import Roll
+from .roll import RollBase
 
