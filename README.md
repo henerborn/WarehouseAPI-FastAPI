@@ -26,8 +26,13 @@ DATABASE_URL=sqlite:///./sql_app.db
 PROJECT_TITLE="Warehouse Rolls API"
 DEBUG=True
 ```
+### 3.1. Запуск через uvicorn
+Из корня проекта:
+```bash
+uvicorn app.main:app --reload
+```
 
-### 3. Docker
+### 3.2. Docker
 Сборка образа:
 ```bash
 docker build -t warehouse-api .
