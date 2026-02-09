@@ -37,6 +37,21 @@ def soft_delete_roll(db: Session, roll_id: int):
     db.refresh(db_roll)
     return db_roll
 
-def get_all_rolls(db:Session):
-    pass
+def get_roll_by_id(db: Session, roll_id: int):
+    db_roll = db.query(RollBase).get(roll_id)
+    if db_roll.remove_date is not None:
+        return "was_removed"
+    return db_roll
+
+def get_roll_by_id_with_removed(db: Session, roll_id: int):
+    db_roll = db.query(RollBase).get(roll_id)
+    return db_roll
+
+def get_all_rolls(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(RollBase).filter(RollBase.remove_date == None).offset(skip).limit(limit).all()
+
+def get_all_rolls_with_removed(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(RollBase).offset(skip).limit(limit).all()
+
+
 

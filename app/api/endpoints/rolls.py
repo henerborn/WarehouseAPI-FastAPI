@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.services import roll_service
 from app.database.session import get_db
@@ -28,11 +29,29 @@ def hard_delete_roll(roll_id: int, db: Session = Depends(get_db)):
     if not succes:
         raise HTTPException(status_code=404, detail="Roll is not found for hard remove")
 
-""" @router.get("/get_rolls")
-def get_all_rolls(rolls: RollRead, db: Session):
-    pass
+@router.get("/", response_model=List[RollRead])
+def get_all_rolls(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    rolls = roll_service.get_all_rolls(db, skip, limit)
+    return rolls
 
-@router.get("/get_roll/{roll_id}")
-def get_roll_by_id(roll_id: int, rolls: RollRead, db: Session):
-    pass """
+@router.get("/find_all/with_removed", response_model=List[RollRead])
+def get_all_rolls_with_removed(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    rolls = roll_service.get_all_rolls_with_removed(db, skip, limit)
+    return rolls
+
+@router.get("/{roll_id}", response_model=RollRead)
+def get_roll_by_id(roll_id: int, db: Session = Depends(get_db)):
+    db_roll = roll_service.get_roll_by_id(db, roll_id)
+    if db_roll is None:
+        raise HTTPException(status_code=404, detail="Roll is not found :(")
+    if db_roll == "was_removed":
+        raise HTTPException(status_code=410, detail="Roll was removed from warehouse:(")
+    return db_roll
+
+@router.get("/{roll_id}/with_removed", response_model=RollRead)
+def get_roll_by_id_with_removed(roll_id: int, db: Session = Depends(get_db)):
+    db_roll = roll_service.get_roll_by_id_with_removed(db, roll_id)
+    if db_roll is None:
+        raise HTTPException(status_code=404, detail="Roll is not found :(")
+    return db_roll
 
