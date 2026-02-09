@@ -15,3 +15,7 @@ class RollRead(RollSchema):
     remove_date: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class RollUpdate(RollSchema):
+    length: Optional[float]
+    weight: Optional[float]
