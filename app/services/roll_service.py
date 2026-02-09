@@ -1,7 +1,8 @@
+from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.roll import RollBase
-from ..schemas.roll import RollCreate, RollRead
+from ..schemas.roll import RollCreate, RollRead, RollUpdate
 
 def create_new_roll(db: Session, roll_data: RollCreate):
     db_roll = RollBase(
@@ -52,6 +53,39 @@ def get_all_rolls(db: Session, skip: int = 0, limit: int = 100):
 
 def get_all_rolls_with_removed(db: Session, skip: int = 0, limit: int = 100):
     return db.query(RollBase).offset(skip).limit(limit).all()
+
+def update_roll(db: Session, roll_id: int, roll_input: RollUpdate):
+    db_roll = db.query(RollBase).get(roll_id)
+    if not db_roll:
+        return None
+    update_data = roll_input.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_roll, field, value)
+    
+    db.commit()
+    db.refresh(db_roll)
+    return db_roll
+
+def get_filtered_rolls(
+    db: Session,
+    id_min: Optional[int] = None, id_max: Optional[int] = None,
+    weight_min: Optional[float] = None, weight_max: Optional[float] = None,
+    length_min: Optional[float] = None, length_max: Optional[float] = None
+):
+    query = db.query(RollBase)
+    if id_min is not None and id_max is not None:
+        query = query.filter(RollBase.id.between(id_min, id_max))
+
+    elif weight_min is not None and weight_max is not None:
+        query = query.filter(RollBase.weight.between(weight_min, weight_max))
+
+    elif length_min is not None and length_max is not None:
+        query = query.filter(RollBase.length.between(length_min, length_max))
+    
+    query = query.filter(RollBase.remove_date == None)  # without removed
+    
+    return query.all() 
+    
 
 
 

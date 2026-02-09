@@ -17,5 +17,5 @@ class RollRead(RollSchema):
     model_config = ConfigDict(from_attributes=True)
 
 class RollUpdate(RollSchema):
-    length: Optional[float]
-    weight: Optional[float]
+    length: Optional[float] = None 
+    weight: Optional[float] = None

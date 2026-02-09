@@ -1,8 +1,9 @@
 from typing import List
+from typing import Optional
 from sqlalchemy.orm import Session
 from app.services import roll_service
 from app.database.session import get_db
-from app.schemas.roll import RollCreate, RollRead
+from app.schemas.roll import RollCreate, RollRead, RollUpdate
 from fastapi import APIRouter, Depends, HTTPException, status
 
 router = APIRouter()
@@ -54,4 +55,25 @@ def get_roll_by_id_with_removed(roll_id: int, db: Session = Depends(get_db)):
     if db_roll is None:
         raise HTTPException(status_code=404, detail="Roll is not found :(")
     return db_roll
+
+@router.patch("/{roll_id}", response_model=RollRead)
+def update_roll(roll_id: int, roll_input: RollUpdate, db: Session = Depends(get_db)):
+    updated_roll = roll_service.update_roll(db, roll_id, roll_input)
+    if not updated_roll:
+        raise HTTPException(status_code=404, detail="Roll not found :(")
+    return updated_roll
+
+@router.get("/", response_model=List[RollRead])
+def get_filtered_rolls(
+    id_min: Optional[int] = None, id_max: Optional[int] = None,
+    weight_min: Optional[float] = None, weight_max: Optional[float] = None,
+    length_min: Optional[float] = None, length_max: Optional[float] = None,
+    db: Session = Depends(get_db)
+):
+    return roll_service.get_rolls_filtered(
+        db, 
+        id_min=id_min, id_max=id_max,
+        weight_min=weight_min, weight_max=weight_max,
+        length_min=length_min, length_max=length_max
+    )
 
