@@ -1,9 +1,10 @@
 from typing import List
 from typing import Optional
+from datetime import datetime
 from sqlalchemy.orm import Session
-from app.services import roll_service
+from app.services import roll_service, stats_service
 from app.database.session import get_db
-from app.schemas.roll import RollCreate, RollRead, RollUpdate
+from app.schemas.roll import RollCreate, RollRead, RollUpdate, RollStatsResponse
 from fastapi import APIRouter, Depends, HTTPException, status
 
 router = APIRouter()
@@ -76,4 +77,15 @@ def get_filtered_rolls(
         weight_min=weight_min, weight_max=weight_max,
         length_min=length_min, length_max=length_max
     )
+
+@router.get("/stats/summary", response_model=RollStatsResponse)
+def get_roll_stats(
+    start_date: datetime, 
+    end_date: datetime, 
+    db: Session = Depends(get_db)
+):
+    if start_date > end_date:
+        raise HTTPException(status_code=400, detail="Start date must be before end date")
+    
+    return stats_service.get_stats(db, start_date, end_date)
 

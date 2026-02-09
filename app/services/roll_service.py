@@ -85,6 +85,9 @@ def get_filtered_rolls(
     query = query.filter(RollBase.remove_date == None)  # without removed
     
     return query.all() 
+
+
+
     
 
 
