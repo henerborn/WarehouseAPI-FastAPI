@@ -40,7 +40,9 @@ def soft_delete_roll(db: Session, roll_id: int):
 
 def get_roll_by_id(db: Session, roll_id: int):
     db_roll = db.query(RollBase).get(roll_id)
-    if db_roll.remove_date is not None:
+    if db_roll is None:
+        return None
+    if db_roll.remove_date:
         return "was_removed"
     return db_roll
 

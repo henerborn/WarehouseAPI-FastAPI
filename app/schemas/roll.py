@@ -3,8 +3,8 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 class RollSchema(BaseModel):
-    length: float
-    weight: float
+    length: float | None = None 
+    weight: float | None = None 
 
 class RollCreate(RollSchema):
     pass

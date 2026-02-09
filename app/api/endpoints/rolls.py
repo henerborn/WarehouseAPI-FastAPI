@@ -71,7 +71,7 @@ def get_filtered_rolls(
     length_min: Optional[float] = None, length_max: Optional[float] = None,
     db: Session = Depends(get_db)
 ):
-    return roll_service.get_rolls_filtered(
+    return roll_service.get_filtered_rolls(
         db, 
         id_min=id_min, id_max=id_max,
         weight_min=weight_min, weight_max=weight_max,
